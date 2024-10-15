@@ -6,6 +6,9 @@ body {
   background-color: #f0f2f5;
   margin: 0;
   color: #333;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 .container {
   max-width: 100%;
@@ -14,6 +17,9 @@ body {
   border-radius: 8px;
   padding: 1rem;
   box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  flex: 1;
+  display: flex;
+  flex-direction: column;
 }
 h1 {
   color: #f0b90b;
@@ -25,7 +31,7 @@ h1 {
   justify-content: space-between;
   margin-bottom: 20px;
 }
-button {
+button, #languageSelector {
   background-color: #f0b90b;
   border: none;
   color: white;
@@ -85,8 +91,10 @@ button {
 }
 #tradingview-widget-container {
   position: relative;
-  height: 60vh !important;
+  height: 50vh;
+  min-height: 300px;
   margin-bottom: 20px;
+  flex: 1;
 }
 #tradingview-widget-container > div {
   position: absolute;
@@ -118,6 +126,10 @@ button {
     width: 100%;
     margin-bottom: 0.5rem;
   }
+  #languageSelector {
+    width: 100%;
+    margin-bottom: 0.5rem;
+  }
   .stats {
     flex-direction: column;
   }
@@ -125,7 +137,11 @@ button {
     margin-bottom: 0.5rem;
   }
   #tradingview-widget-container {
-    height: 300px !important;
+    height: 40vh;
+    min-height: 250px;
+  }
+  #signals, #log {
+    max-height: 150px;
   }
 }
 @media (min-width: 768px) {
@@ -133,42 +149,36 @@ button {
     max-width: 1200px;
     padding: 2rem;
   }
-  
   h1 {
     font-size: 2rem;
   }
-  
   .controls {
     flex-direction: row;
   }
-  
   button {
     width: auto;
   }
-  
   .stats {
     flex-direction: row;
   }
-  
   .stat {
     margin-bottom: 0;
   }
-  
   #tradingview-widget-container {
-    height: 400px !important;
+    height: 50vh;
+    min-height: 400px;
   }
 }
 @media (min-width: 1024px) {
   .container {
     padding: 2.5rem;
   }
-  
   h1 {
     font-size: 2.5rem;
   }
-  
   #tradingview-widget-container {
-    height: 500px !important;
+    height: 60vh;
+    min-height: 500px;
   }
 }
 body.dark-mode {
@@ -177,10 +187,6 @@ body.dark-mode {
 }
 body.dark-mode .container {
   background-color: #2a2a2a;
-}
-body.dark-mode button {
-  background-color: #3a3a3a;
-  color: #ffffff;
 }
 body.dark-mode .stats {
   background-color: #3a3a3a;
@@ -200,38 +206,8 @@ body.dark-mode .signal.sell {
   background-color: #3a1e1e;
   color: #f44336;
 }
-footer {
-  margin-top: 20px;
-  padding: 10px;
-  background-color: #f0f2f5;
-  text-align: center;
-  font-size: 0.9rem;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
 body.dark-mode footer {
   background-color: #2a2a2a;
-  color: #ffffff;
-}
-.language-toggle {
-  background-color: transparent;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  padding: 5px 10px;
-  font-size: 0.9rem;
-  cursor: pointer;
-  transition: background-color 0.3s;
-}
-.language-toggle:hover {
-  background-color: #e0e0e0;
-}
-body.dark-mode .language-toggle {
-  border-color: #555;
-  color: #ffffff;
-}
-body.dark-mode .language-toggle:hover {
-  background-color: #3a3a3a;
 }
 #networkStatus {
   position: fixed;
@@ -249,6 +225,11 @@ body.dark-mode .language-toggle:hover {
       <button id="startBtn">Iniciar Bot</button>
       <button id="stopBtn">Parar Bot</button>
       <button id="themeToggleBtn">Alternar Modo Escuro</button>
+      <select id="languageSelector">
+        <option value="pt-BR">Português</option>
+        <option value="en">English</option>
+        <option value="es">Español</option>
+      </select>
     </div>
     <div id="tradingview-widget-container"></div>
     <div class="stats">
@@ -268,10 +249,6 @@ body.dark-mode .language-toggle:hover {
     <div id="signals"></div>
     <div id="log"></div>
   </div>
-  <footer>
-    <p>&copy; 2023 Jean Vieira. Todos os direitos reservados.</p>
-    <button id="languageToggle" class="language-toggle">🌐 PT</button>
-  </footer>
   <div id="networkStatus"></div>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
@@ -281,6 +258,47 @@ window.addEventListener('unhandledrejection', function(event) {
   console.error('Unhandled rejection (promise: ', event.promise, ', reason: ', event.reason, ').');
   logMessage(`Erro não tratado: ${event.reason}`);
 });
+const translations = {
+  'pt-BR': {
+    title: "Bot de Trading Binance Futures - Estratégia de Seguimento de Tendência",
+    startBtn: "Iniciar Bot",
+    stopBtn: "Parar Bot",
+    themeToggleBtn: "Alternar Modo Escuro",
+    signalsGenerated: "Sinais Gerados",
+    lastPrice: "Último Preço",
+    openPositions: "Posições Abertas",
+  },
+  'en': {
+    title: "Binance Futures Trading Bot - Trend Following Strategy",
+    startBtn: "Start Bot",
+    stopBtn: "Stop Bot",
+    themeToggleBtn: "Toggle Dark Mode",
+    signalsGenerated: "Signals Generated",
+    lastPrice: "Last Price",
+    openPositions: "Open Positions",
+  },
+  'es': {
+    title: "Bot de Trading Binance Futures - Estrategia de Seguimiento de Tendencia",
+    startBtn: "Iniciar Bot",
+    stopBtn: "Detener Bot",
+    themeToggleBtn: "Alternar Modo Oscuro",
+    signalsGenerated: "Señales Generadas",
+    lastPrice: "Último Precio",
+    openPositions: "Posiciones Abiertas",
+  }
+};
+
+function changeLanguage(lang) {
+  document.querySelector('title').textContent = translations[lang].title;
+  document.querySelector('h1').textContent = translations[lang].title;
+  document.getElementById('startBtn').textContent = translations[lang].startBtn;
+  document.getElementById('stopBtn').textContent = translations[lang].stopBtn;
+  document.getElementById('themeToggleBtn').textContent = translations[lang].themeToggleBtn;
+  document.querySelector('.stat:nth-child(1) div:first-child').textContent = translations[lang].signalsGenerated;
+  document.querySelector('.stat:nth-child(2) div:first-child').textContent = translations[lang].lastPrice;
+  document.querySelector('.stat:nth-child(3) div:first-child').textContent = translations[lang].openPositions;
+}
+
 function createNetworkStatusIndicator() {
   const indicator = document.createElement('div');
   indicator.id = 'networkStatus';
@@ -314,7 +332,7 @@ const maxReconnectAttempts = 5;
 const baseReconnectDelay = 1000;
 // Initialize Firebase
 const firebaseConfig = {
-  apiKey: "",
+  apiKey: "AIzaSyAxDf9rZvv9qi-uooo9RXqTJojldocF1Vo",
   authDomain: "bot-trading-99f76.firebaseapp.com",
   projectId: "bot-trading-99f76",
   storageBucket: "bot-trading-99f76.appspot.com",
@@ -373,7 +391,7 @@ function populateSymbolSelector(symbols) {
     selector.appendChild(option);
   });
 }
-function initTradingViewWidget(symbol, isDarkMode, lang = 'pt') {
+function initTradingViewWidget(symbol, isDarkMode) {
   if (widget) {
     widget.remove();
   }
@@ -385,7 +403,7 @@ function initTradingViewWidget(symbol, isDarkMode, lang = 'pt') {
     "timezone": "Etc/UTC",
     "theme": isDarkMode ? "dark" : "light",
     "style": "1",
-    "locale": lang,
+    "locale": "pt",
     "toolbar_bg": isDarkMode ? "#2a2a2a" : "#f1f3f6",
     "enable_publishing": false,
     "hide_side_toolbar": false,
@@ -422,7 +440,7 @@ function updateSymbol(newSymbol) {
     }, 1000);
   }
   const isDarkMode = document.body.classList.contains('dark-mode');
-  initTradingViewWidget(symbol, isDarkMode, currentLanguage);
+  initTradingViewWidget(symbol, isDarkMode);
 }
 function saveDataToFirebase() {
   db.collection("tradingData").doc("currentState").set({
@@ -817,82 +835,34 @@ document.addEventListener('DOMContentLoaded', async function() {
       updateSymbol(newSymbol);
     });
     document.getElementById('themeToggleBtn').addEventListener('click', toggleTheme);
-    document.getElementById('languageToggle').addEventListener('click', toggleLanguage);
     
     const isDarkMode = localStorage.getItem('darkMode') === 'true';
     if (isDarkMode) {
       document.body.classList.add('dark-mode');
     }
-    initTradingViewWidget(symbol, isDarkMode, currentLanguage);
+    initTradingViewWidget(symbol, isDarkMode);
+
+    document.getElementById('languageSelector').addEventListener('change', (event) => {
+      const selectedLanguage = event.target.value;
+      changeLanguage(selectedLanguage);
+    });
+
+    const initialLanguage = 'pt-BR'; 
+    document.getElementById('languageSelector').value = initialLanguage;
+    changeLanguage(initialLanguage);
   } catch (error) {
     console.error('Erro durante a inicialização:', error);
     logMessage(`Erro durante a inicialização: ${error.message}`);
   }
 });
-const translations = {
-  'pt': {
-    'title': 'Bot de Trading Binance Futures - Estratégia de Seguimento de Tendência',
-    'startBtn': 'Iniciar Bot',
-    'stopBtn': 'Parar Bot',
-    'themeToggleBtn': 'Alternar Modo Escuro',
-    'signalsGenerated': 'Sinais Gerados',
-    'lastPrice': 'Último Preço',
-    'openPositions': 'Posições Abertas',
-    'footer': '© 2023 Jean Vieira. Todos os direitos reservados.'
-  },
-  'en': {
-    'title': 'Binance Futures Trading Bot - Trend Following Strategy',
-    'startBtn': 'Start Bot',
-    'stopBtn': 'Stop Bot',
-    'themeToggleBtn': 'Toggle Dark Mode',
-    'signalsGenerated': 'Signals Generated',
-    'lastPrice': 'Last Price',
-    'openPositions': 'Open Positions',
-    'footer': '© 2023 Jean Vieira. All rights reserved.'
-  },
-  'es': {
-    'title': 'Bot de Trading Binance Futures - Estrategia de Seguimiento de Tendencia',
-    'startBtn': 'Iniciar Bot',
-    'stopBtn': 'Detener Bot',
-    'themeToggleBtn': 'Cambiar Modo Oscuro',
-    'signalsGenerated': 'Señales Generadas',
-    'lastPrice': 'Último Precio',
-    'openPositions': 'Posiciones Abiertas',
-    'footer': '© 2023 Jean Vieira. Todos los derechos reservados.'
-  }
-};
-let currentLanguage = 'pt';
-function changeLanguage(lang) {
-  currentLanguage = lang;
-  document.querySelector('h1').textContent = translations[lang].title;
-  document.getElementById('startBtn').textContent = translations[lang].startBtn;
-  document.getElementById('stopBtn').textContent = translations[lang].stopBtn;
-  document.getElementById('themeToggleBtn').textContent = translations[lang].themeToggleBtn;
-  document.querySelector('.stat:nth-child(1) div:first-child').textContent = translations[lang].signalsGenerated;
-  document.querySelector('.stat:nth-child(2) div:first-child').textContent = translations[lang].lastPrice;
-  document.querySelector('.stat:nth-child(3) div:first-child').textContent = translations[lang].openPositions;
-  document.querySelector('footer p').textContent = translations[lang].footer;
-  
-  const isDarkMode = document.body.classList.contains('dark-mode');
-  reinitializeTradingViewWidget(isDarkMode, lang);
-}
-function reinitializeTradingViewWidget(isDarkMode, lang = 'pt') {
-  initTradingViewWidget(symbol, isDarkMode, lang);
-}
 function toggleTheme() {
   const body = document.body;
   const isDarkMode = body.classList.toggle('dark-mode');
   localStorage.setItem('darkMode', isDarkMode);
-  reinitializeTradingViewWidget(isDarkMode, currentLanguage);
+  reinitializeTradingViewWidget(isDarkMode);
 }
-
-function toggleLanguage() {
-  const languages = ['pt', 'en', 'es'];
-  const currentIndex = languages.indexOf(currentLanguage);
-  const nextIndex = (currentIndex + 1) % languages.length;
-  const nextLanguage = languages[nextIndex];
-  changeLanguage(nextLanguage);
-  document.getElementById('languageToggle').textContent = `🌐 ${nextLanguage.toUpperCase()}`;
+function reinitializeTradingViewWidget(isDarkMode) {
+  initTradingViewWidget(symbol, isDarkMode);
 }
 </script>
 </body></html>
